@@ -34,8 +34,8 @@ RUN sed -i 's#https://registry.npmjs.org#https://registry.npmmirror.com#g' packa
  && npm ci --omit=dev --registry=https://registry.npmmirror.com
 
 RUN python3 -m venv /app/.venv \
- && /app/.venv/bin/pip install --no-cache-dir --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple \
- && /app/.venv/bin/pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple faster-whisper yt-dlp "opencv-python-headless==4.10.0.84" Pillow zhconv onnxruntime pypinyin jieba cn2an
+ && /app/.venv/bin/pip install --no-cache-dir --upgrade pip -i https://mirrors.aliyun.com/pypi/simple/ \
+ && /app/.venv/bin/pip install --no-cache-dir -i https://mirrors.aliyun.com/pypi/simple/ faster-whisper yt-dlp "opencv-python-headless==4.10.0.84" Pillow zhconv onnxruntime pypinyin jieba cn2an
 
 # 预下载 Whisper base，避免抖音云冷启动时下载模型失败
 RUN mkdir -p /app/models/hf /app/tmp/uploads /app/tmp/work /app/tmp/watermark /app/tmp/photo /app/tmp/voice /app/tmp/overlay /app/tmp/image-video \
