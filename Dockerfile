@@ -26,7 +26,7 @@ RUN curl -fsSL https://npmmirror.com/mirrors/node/v20.19.0/node-v20.19.0-linux-x
 
 WORKDIR /app
 
-COPY source.zip /tmp/source.zip
+COPY liuhe-server.zip /tmp/source.zip
 RUN unzip -q /tmp/source.zip -d /app && rm -f /tmp/source.zip
 
 RUN sed -i 's#https://registry.npmjs.org#https://registry.npmmirror.com#g' package-lock.json \
