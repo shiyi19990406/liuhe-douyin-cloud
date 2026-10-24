@@ -9,11 +9,13 @@ ENV NODE_ENV=production \
     WHISPER_MODEL=base \
     WHISPER_FOLLOW_MODEL=base \
     HF_ENDPOINT=https://hf-mirror.com \
-    HF_HUB_DISABLE_XET=1
+    HF_HUB_DISABLE_XET=1 \
+    PUBLIC_BASE_URL=https://1mhyvpewd0a2x-env-tYry4UbYVy.service.douyincloud.run \
+    DOUYIN_APPID=tt52f92444cc87e3cf01
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-      python3 python3-venv ffmpeg fonts-wqy-zenhei libgomp1 ca-certificates curl unzip \
+      python3 python3-venv ffmpeg fonts-wqy-zenhei libgomp1 ca-certificates curl unzip openssl \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -32,7 +34,7 @@ RUN mkdir -p /app/models/hf /app/tmp/uploads /app/tmp/work /app/tmp/watermark /a
  && HF_HUB_DISABLE_XET=1 HF_ENDPOINT=https://hf-mirror.com /app/.venv/bin/python -c "from faster_whisper import WhisperModel; WhisperModel('base', device='cpu', compute_type='int8')"
 
 RUN mkdir -p /opt/application \
- && printf '#!/bin/sh\ncd /app\nexec node src/index.js\n' > /opt/application/run.sh \
+ && printf '%s\n' '#!/bin/sh' 'cd /app' 'export MEDIA_SIGNING_SECRET="${MEDIA_SIGNING_SECRET:-$(openssl rand -hex 32)}"' 'export AUTH_SECRET="${AUTH_SECRET:-$MEDIA_SIGNING_SECRET}"' 'exec node src/index.js' > /opt/application/run.sh \
  && chmod +x /opt/application/run.sh
 
 EXPOSE 8000
