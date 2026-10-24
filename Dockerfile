@@ -41,7 +41,7 @@ RUN python3 -m venv /app/.venv \
 RUN mkdir -p /app/models/hf /app/tmp/uploads /app/tmp/work /app/tmp/watermark /app/tmp/photo /app/tmp/voice /app/tmp/overlay /app/tmp/image-video
 
 RUN mkdir -p /opt/application \
- && printf '%s\n' '#!/bin/sh' 'cd /app' 'export MEDIA_SIGNING_SECRET="${MEDIA_SIGNING_SECRET:-$(openssl rand -hex 32)}"' 'export AUTH_SECRET="${AUTH_SECRET:-$MEDIA_SIGNING_SECRET}"' 'exec node src/index.js' > /opt/application/run.sh \
+ && printf '%s\n' '#!/bin/sh' 'cd /app' 'export PORT=8000' 'export MEDIA_SIGNING_SECRET="${MEDIA_SIGNING_SECRET:-$(openssl rand -hex 32)}"' 'export AUTH_SECRET="${AUTH_SECRET:-$MEDIA_SIGNING_SECRET}"' 'exec node src/index.js' > /opt/application/run.sh \
  && chmod +x /opt/application/run.sh
 
 EXPOSE 8000
