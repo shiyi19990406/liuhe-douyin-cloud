@@ -13,7 +13,7 @@ ENV NODE_ENV=production \
     PUBLIC_BASE_URL=https://1mhyvpewd0a2x-env-tYry4UbYVy.service.douyincloud.run \
     DOUYIN_APPID=tt52f92444cc87e3cf01
 
-RUN sed -i 's#http://deb.debian.org/debian#https://mirrors.tuna.tsinghua.edu.cn/debian#g; s#http://security.debian.org/debian-security#https://mirrors.tuna.tsinghua.edu.cn/debian-security#g; s#http://mirrors.aliyun.com#https://mirrors.tuna.tsinghua.edu.cn#g' /etc/apt/sources.list \
+RUN sed -i '/security.debian.org/d; s#http://deb.debian.org/debian#http://mirrors.aliyun.com/debian#g' /etc/apt/sources.list \
  && apt-get update \
  && apt-get install -y --no-install-recommends --fix-missing \
       ffmpeg fonts-wqy-zenhei libgomp1 ca-certificates curl xz-utils openssl unzip \
