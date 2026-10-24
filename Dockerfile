@@ -1,4 +1,4 @@
-FROM node:22-bookworm-slim
+FROM public-cn-beijing.cr.volces.com/public/base:python-3.10.6
 
 ENV NODE_ENV=production \
     PORT=8000 \
@@ -15,19 +15,26 @@ ENV NODE_ENV=production \
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-      python3 python3-venv ffmpeg fonts-wqy-zenhei libgomp1 ca-certificates curl unzip openssl \
+      ffmpeg fonts-wqy-zenhei libgomp1 ca-certificates curl xz-utils openssl unzip \
  && rm -rf /var/lib/apt/lists/*
+
+# 使用国内镜像安装 Node 20（抖音云构建环境无法直接拉取 Docker Hub 镜像）
+RUN curl -fsSL https://npmmirror.com/mirrors/node/v20.19.0/node-v20.19.0-linux-x64.tar.xz -o /tmp/node.tar.xz \
+ && tar -xJf /tmp/node.tar.xz -C /usr/local --strip-components=1 \
+ && rm -f /tmp/node.tar.xz \
+ && node -v && npm -v
 
 WORKDIR /app
 
 COPY source.zip /tmp/source.zip
 RUN unzip -q /tmp/source.zip -d /app && rm -f /tmp/source.zip
 
-RUN npm ci --omit=dev
+RUN sed -i 's#https://registry.npmjs.org#https://registry.npmmirror.com#g' package-lock.json \
+ && npm ci --omit=dev --registry=https://registry.npmmirror.com
 
 RUN python3 -m venv /app/.venv \
- && /app/.venv/bin/pip install --no-cache-dir --upgrade pip \
- && /app/.venv/bin/pip install --no-cache-dir faster-whisper yt-dlp "opencv-python-headless==4.10.0.84" Pillow zhconv onnxruntime pypinyin jieba cn2an
+ && /app/.venv/bin/pip install --no-cache-dir --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple \
+ && /app/.venv/bin/pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple faster-whisper yt-dlp "opencv-python-headless==4.10.0.84" Pillow zhconv onnxruntime pypinyin jieba cn2an
 
 # 预下载 Whisper base，避免抖音云冷启动时下载模型失败
 RUN mkdir -p /app/models/hf /app/tmp/uploads /app/tmp/work /app/tmp/watermark /app/tmp/photo /app/tmp/voice /app/tmp/overlay /app/tmp/image-video \
